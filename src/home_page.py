@@ -29,11 +29,11 @@ def get_card_summary(df: pd.DataFrame) -> list:
     """Возвращает информацию по каждой карте: последние 4 цифры, общая сумма расходов, кешбэк"""
     card_summary = []  # Создаем пустой список для хранения информации по картам
     for card in df['Номер карты'].unique():  # Перебираем уникальные значения из столбца 'Номер карты'
-        print(f"Обработка карты: {card}")
+        #print(f"Обработка карты: {card}")
         card_df = df[df['Номер карты'] == card]  # Фильтруем датафрейм по текущей карте
-        print(card_df)
+        #print(card_df)
         total_spent = card_df['Сумма платежа'].sum()  # Считаем общую сумму расходов для текущей карты
-        print(total_spent)
+        #print(total_spent)
         cashback = total_spent / 100  # Рассчитываем кешбэк как 1% от общей суммы расходов
         # Добавляем информацию по текущей карте в список card_summary
         card_summary.append({
@@ -42,6 +42,22 @@ def get_card_summary(df: pd.DataFrame) -> list:
             'cashback': round(cashback, 2)  # Кешбэк
         })
     return card_summary
+
+def get_top_transactions(df: pd.DataFrame, top_n: int = 5) -> list:
+    """Возвращает топ-N транзакций по сумме платежа"""
+    df['Дата операции'] = pd.to_datetime(df['Дата операции'], dayfirst=True)  # Преобразуем столбец 'Дата операции' в datetime с dayfirst=True
+    top_transactions = df.nlargest(top_n, 'Сумма платежа')
+    top_transactions = top_transactions[['Дата операции', 'Сумма платежа', 'Категория', 'Описание']]
+    top_transactions['Дата операции'] = top_transactions['Дата операции'].dt.strftime('%d.%m.%Y')
+    formatted_transactions = []
+    for index, row in top_transactions.iterrows():
+        formatted_transactions.append({
+            'date': row['Дата операции'],
+            'amount': row['Сумма платежа'],
+            'category': row['Категория'],
+            'description': row['Описание']
+        })
+    return formatted_transactions
 
 
 
@@ -53,3 +69,5 @@ if __name__ == '__main__':
     operations = load_excel_to_dataframe('operations.xls')
 
     print(get_card_summary(operations))
+
+    print(get_top_transactions(operations))
