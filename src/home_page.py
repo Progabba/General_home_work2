@@ -76,15 +76,16 @@ def get_currency_rates() -> list:
 
 
 
-def get_stock_prices() -> list:
-    """Возвращает стоимость акций (заглушка для примера)"""
-    return [
-        {'stock': 'AAPL', 'price': 150.12},
-        {'stock': 'AMZN', 'price': 3173.18},
-        {'stock': 'GOOGL', 'price': 2742.39},
-        {'stock': 'MSFT', 'price': 296.71},
-        {'stock': 'TSLA', 'price': 1007.08}
-    ]
+def get_stock_prices(api_key: str, symbols: list) -> list:
+    """Возвращает стоимость акций для заданных символов (например, AAPL, AMZN)"""
+    prices = []
+    for symbol in symbols:
+        url = f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={api_key}'
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json().get('Global Quote', {})
+            prices.append({'stock': symbol, 'price': float(data.get('05. price', 0))})
+    return prices
 
 
 if __name__ == '__main__':
@@ -98,3 +99,8 @@ if __name__ == '__main__':
     print(get_top_transactions(operations))
 
     print(get_currency_rates())
+
+    api_key = 'LLFCICMLGVZP3MIE'
+    symbols = ['AAPL', 'AMZN', 'GOOGL', 'MSFT', 'TSLA']
+    stock_prices = get_stock_prices(api_key, symbols)
+    print(stock_prices)
