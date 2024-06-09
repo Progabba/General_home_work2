@@ -5,6 +5,7 @@ from datetime import datetime
 import json
 import requests
 
+
 def load_excel_to_dataframe(file_name: str) -> DataFrame:
     """Функция читает эксель файл и возвращает дата фрейм"""
     df = pd.read_excel(file_name)
