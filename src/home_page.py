@@ -59,7 +59,32 @@ def get_top_transactions(df: pd.DataFrame, top_n: int = 5) -> list:
         })
     return formatted_transactions
 
+import requests
 
+def get_currency_rates() -> list:
+    url = 'https://api.exchangerate-api.com/v4/latest/RUB'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        usd_rate = 1 / data.get('rates', {}).get('USD')
+        eur_rate = 1 / data.get('rates', {}).get('EUR')
+        return [
+            {'currency': 'USD', 'rate': usd_rate},
+            {'currency': 'EUR', 'rate': eur_rate}
+        ]
+    return []
+
+
+
+def get_stock_prices() -> list:
+    """Возвращает стоимость акций (заглушка для примера)"""
+    return [
+        {'stock': 'AAPL', 'price': 150.12},
+        {'stock': 'AMZN', 'price': 3173.18},
+        {'stock': 'GOOGL', 'price': 2742.39},
+        {'stock': 'MSFT', 'price': 296.71},
+        {'stock': 'TSLA', 'price': 1007.08}
+    ]
 
 
 if __name__ == '__main__':
@@ -71,3 +96,5 @@ if __name__ == '__main__':
     print(get_card_summary(operations))
 
     print(get_top_transactions(operations))
+
+    print(get_currency_rates())
