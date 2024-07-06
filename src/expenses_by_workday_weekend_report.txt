@@ -1,0 +1,1 @@
+Series([], Name: Сумма операции, dtype: float64)
